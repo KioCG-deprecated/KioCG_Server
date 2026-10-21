@@ -63,38 +63,6 @@
              }
  
              // CraftBukkit start - initialize oldLevel, fire PlayerLevelChangeEvent, and tick client-sided world border
-@@ -936,8 +_,29 @@
-             if (this.tickCount % 10 == 0 && this.foodData.needsFood()) {
-                 this.foodData.setFoodLevel(this.foodData.getFoodLevel() + 1);
-             }
--        }
--    }
-+
-+            // kioCG start - player thirsty
-+            if (this.tickCount % 10 == 0 && this.thirstData.needsWater()) {
-+                this.thirstData.setThirstValue(this.thirstData.getThirstValue() + 1);
-+            }
-+            // kioCG end - player thirsty
-+        }
-+    }
-+
-+    // KioCG start - player thirsty
-+    public void sendAirMessage(int value, int maxValue) {
-+        net.kyori.adventure.text.Component bubbles = io.papermc.paper.configuration.GlobalConfiguration.get().kiocgConfig.airProgressO2;
-+        int air = (int) Math.ceil(value / (maxValue / 10.0));
-+        for (int i = 1; i <= 10; i++) {
-+            if (air >= i) {
-+                bubbles = bubbles.append(io.papermc.paper.configuration.GlobalConfiguration.get().kiocgConfig.airProgressHave);
-+            } else {
-+                bubbles = bubbles.append(io.papermc.paper.configuration.GlobalConfiguration.get().kiocgConfig.airProgressLost);
-+            }
-+        }
-+        this.getBukkitEntity().sendActionBar(bubbles);
-+    }
-+    // KioCG end - player thirsty
- 
-     @Override
-     public void resetFallDistance() {
 @@ -1037,7 +_,14 @@
          if (!keepInventory) {
              for (ItemStack item : this.getInventory().getContents()) {
@@ -242,7 +210,7 @@
      }
  
      @Override
-@@ -2020,13 +_,17 @@
+@@ -2020,8 +_,11 @@
      public void restoreFrom(ServerPlayer that, boolean keepEverything) {
          this.wardenSpawnTracker = that.wardenSpawnTracker;
          this.chatSession = that.chatSession;
@@ -256,12 +224,6 @@
          if (keepEverything) {
              this.getAttributes().assignBaseValues(that.getAttributes());
              // this.getAttributes().assignPermanentModifiers(that.getAttributes()); // CraftBukkit
-             this.setHealth(that.getHealth());
-             this.foodData = that.foodData;
-+            this.thirstData = that.thirstData; // KioCG - player thirsty
- 
-             for (MobEffectInstance mobEffectInstance : that.getActiveEffects()) {
-                 // this.addEffect(new MobEffectInstance(mobEffectInstance)); // CraftBukkit
 @@ -2059,6 +_,7 @@
          // this.recipeBook.copyOverData(that.recipeBook); // CraftBukkit
          this.seenCredits = that.seenCredits;
@@ -331,11 +293,3 @@
          if (vehicle != null) {
              this.connection.send(new ClientboundSetPassengersPacket(vehicle));
          }
-@@ -2949,6 +_,7 @@
-         this.setRemainingFireTicks(0);
-         this.fallDistance = 0;
-         this.foodData = new net.minecraft.world.food.FoodData();
-+        this.thirstData = new com.kiocg.entity.player.ThirstData(this); // KioCG - player thirsty
-         this.experienceLevel = this.newLevel;
-         this.totalExperience = this.newTotalExp;
-         this.experienceProgress = 0;

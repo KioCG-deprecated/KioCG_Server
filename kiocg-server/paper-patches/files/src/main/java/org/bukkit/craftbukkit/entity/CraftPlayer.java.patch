@@ -1,13 +1,5 @@
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -227,6 +_,7 @@
-     private double health = 20;
-     private boolean scaledHealth = false;
-     private double healthScale = 20;
-+    public int realAir; // KioCG - player thirsty
-     private CraftWorldBorder clientWorldBorder = null;
-     private BorderChangeListener clientWorldBorderListener = this.createWorldBorderListener();
-     private long lastSaveTime; // Paper - getLastPlayed replacement API
 @@ -272,6 +_,29 @@
          }
      }
@@ -38,7 +30,7 @@
      @Override
      public boolean isOp() {
          return this.server.getHandle().isOp(this.getProfile());
-@@ -3415,6 +_,41 @@
+@@ -3415,6 +_,13 @@
      }
      // Paper end
  
@@ -48,34 +40,6 @@
 +        return getHandle().inStructure;
 +    }
 +    // KioCG end - player in structure api
-+
-+    // KioCG start - player thirsty
-+    @Override
-+    public int getThirstValue() {
-+        return this.getHandle().thirstData.getThirstValue();
-+    }
-+    @Override
-+    public void setThirstValue(int value) {
-+        this.getHandle().thirstData.setThirstValue(value);
-+    }
-+    @Override
-+    public void addThirstValue(int add) {
-+        this.getHandle().thirstData.addThirstValue(add);
-+    }
-+
-+    @Override
-+    public float getThirstRegain() {
-+        return this.getHandle().thirstData.getThirstRegain();
-+    }
-+    @Override
-+    public void setThirstRegain(float value) {
-+        this.getHandle().thirstData.setThirstRegain(value);
-+    }
-+    @Override
-+    public void addThirstRegain(float add) {
-+        this.getHandle().thirstData.addThirstRegain(add);
-+    }
-+    // KioCG end - player thirsty
 +
      public Player.Spigot spigot() {
          return this.spigot;

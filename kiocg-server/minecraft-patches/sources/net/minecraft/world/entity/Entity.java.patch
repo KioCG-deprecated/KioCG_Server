@@ -56,22 +56,6 @@
      public boolean startRiding(Entity vehicle, boolean force) {
          if (vehicle == this.vehicle || vehicle.level != this.level) { // Paper - Ensure entity passenger world matches ridden entity (bad plugins)
              return false;
-@@ -3605,6 +_,7 @@
-     }
- 
-     public int getAirSupply() {
-+        if (this instanceof ServerPlayer player) return player.getBukkitEntity().realAir; // KioCG - player thirsty
-         return this.entityData.get(DATA_AIR_SUPPLY_ID);
-     }
- 
-@@ -3619,6 +_,7 @@
-             this.entityData.markDirty(Entity.DATA_AIR_SUPPLY_ID);
-             return;
-         }
-+        if (this instanceof ServerPlayer player) { player.getBukkitEntity().realAir = event.getAmount(); } else // KioCG - player thirsty
-         this.entityData.set(Entity.DATA_AIR_SUPPLY_ID, event.getAmount());
-         // CraftBukkit end
-     }
 @@ -4134,7 +_,7 @@
          Entity entity,
          org.bukkit.Location exit,

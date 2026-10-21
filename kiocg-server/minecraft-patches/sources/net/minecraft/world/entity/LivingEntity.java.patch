@@ -14,46 +14,6 @@
  
      protected LivingEntity(EntityType<? extends LivingEntity> entityType, Level level) {
          super(entityType, level);
-@@ -449,6 +_,7 @@
-                 }
-             }
- 
-+            if (this instanceof ServerPlayer serverPlayer) serverPlayer.thirstData.underWater = false; // KioCG - player thirsty
-             if (this.isEyeInFluid(FluidTags.WATER)
-                 && !serverLevel1.getBlockState(BlockPos.containing(this.getX(), this.getEyeY(), this.getZ())).is(Blocks.BUBBLE_COLUMN)) {
-                 boolean flag1 = !this.canBreatheUnderwater()
-@@ -461,8 +_,19 @@
-                         serverLevel1.broadcastEntityEvent(this, (byte)67);
-                         this.hurtServer(serverLevel1, this.damageSources().drown(), 2.0F);
-                     }
-+                    // KioCG start - player thirsty
-+                    if (this instanceof ServerPlayer serverPlayer) {
-+                        serverPlayer.thirstData.underWater = true;
-+                        serverPlayer.sendAirMessage(Math.max(this.getAirSupply(), 0), this.getMaxAirSupply());
-+                    }
-+                    // KioCG end - player thirsty
-                 } else if (this.getAirSupply() < this.getMaxAirSupply()) {
-                     this.setAirSupply(this.increaseAirSupply(this.getAirSupply()));
-+                    // KioCG start - player thirsty
-+                    if (this instanceof ServerPlayer serverPlayer) {
-+                        serverPlayer.sendAirMessage(Math.max(this.getAirSupply(), 0), this.getMaxAirSupply());
-+                    }
-+                    // KioCG end - player thirsty
-                 }
- 
-                 if (this.isPassenger() && this.getVehicle() != null && this.getVehicle().dismountsUnderwater()) {
-@@ -470,6 +_,11 @@
-                 }
-             } else if (this.getAirSupply() < this.getMaxAirSupply()) {
-                 this.setAirSupply(this.increaseAirSupply(this.getAirSupply()));
-+                // KioCG start - player thirsty
-+                if (this instanceof ServerPlayer serverPlayer) {
-+                    serverPlayer.sendAirMessage(Math.max(this.getAirSupply(), 0), this.getMaxAirSupply());
-+                }
-+                // KioCG end - player thirsty
-             }
- 
-             BlockPos blockPos = this.blockPosition();
 @@ -559,6 +_,70 @@
          return false;
      }
@@ -169,26 +129,6 @@
      }
  
      // CraftBukkit start
-@@ -1352,6 +_,7 @@
- 
-     public void heal(float healAmount, EntityRegainHealthEvent.RegainReason regainReason, boolean isFastRegen) {
-         // Paper end - Forward
-+        if (!(this instanceof net.minecraft.world.entity.player.Player player) || !player.thirstData.isThirsty(player)) { // KioCG - player thirsty
-         float health = this.getHealth();
-         if (health > 0.0F) {
-             EntityRegainHealthEvent event = new EntityRegainHealthEvent(this.getBukkitEntity(), healAmount, regainReason, isFastRegen); // Paper
-@@ -1362,9 +_,11 @@
- 
-             if (!event.isCancelled()) {
-                 this.setHealth((float) (this.getHealth() + event.getAmount()));
-+                if (this instanceof net.minecraft.world.entity.player.Player player) player.thirstData.addThirstRegain((float) (Math.max(this.getHealth() - health, 0) * this.level().paperConfig().kiocgConfig.playerThirsty.thirstRegainMultiplierHealth)); // KioCG - player thirsty
-             }
-             // CraftBukkit end
-         }
-+        } // KioCG - player thirsty
-     }
- 
-     public float getHealth() {
 @@ -1457,6 +_,7 @@
                  if (!this.actuallyHurt(level, damageSource, (float) event.getFinalDamage(), event)) { // Paper - fix invulnerability reduction in EntityDamageEvent - no longer subtract lastHurt, that is part of the damage event calc now
                      return false;

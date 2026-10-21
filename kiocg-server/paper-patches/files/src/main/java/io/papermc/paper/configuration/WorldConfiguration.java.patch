@@ -1,6 +1,6 @@
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-@@ -587,4 +_,74 @@
+@@ -587,4 +_,67 @@
          	HORIZONTAL_FIRST_OUTWARD, HORIZONTAL_FIRST_INWARD, VERTICAL_FIRST_OUTWARD, VERTICAL_FIRST_INWARD
          }
      }
@@ -13,13 +13,6 @@
 +        public double deathKeepLevelPercent = 0.7;
 +        public boolean deathItemsOnlyPickupByOneself = true;
 +        public int sleepHealingRegenRate = 10;
-+
-+        public PlayerThirsty playerThirsty;
-+        public class PlayerThirsty extends ConfigurationPart {
-+            public double thirstRegainMultiplierHealth = 2.0;
-+            public double thirstRegainMultiplierFood = 6.0;
-+            public double lowDownfallBiomeMultiplier = 2.0;
-+        }
 +
 +        public Block block;
 +        public class Block extends ConfigurationPart {

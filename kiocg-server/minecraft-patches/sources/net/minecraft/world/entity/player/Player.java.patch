@@ -1,15 +1,13 @@
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -181,7 +_,9 @@
+@@ -181,6 +_,7 @@
      protected PlayerEnderChestContainer enderChestInventory = new PlayerEnderChestContainer(this); // CraftBukkit - add "this" to constructor
      public final InventoryMenu inventoryMenu;
      public AbstractContainerMenu containerMenu;
 +    @Nullable public org.bukkit.inventory.Inventory carriedFrom = null; // KioCG - InventoryExchangeItemEvent
      protected FoodData foodData = new FoodData();
-+    public com.kiocg.entity.player.ThirstData thirstData = new com.kiocg.entity.player.ThirstData(this); // KioCG - player thirsty
      protected int jumpTriggerTime;
      private boolean clientLoaded = false;
-     protected int clientLoadedTimeoutTimer = 60;
 @@ -219,6 +_,7 @@
      private int currentImpulseContextResetGraceTime = 0;
      public boolean affectsSpawning = true; // Paper - Affects Spawning API
@@ -67,14 +65,6 @@
                  this.stopSleepInBed(false, true);
              }
          } else if (this.sleepCounter > 0) {
-@@ -329,6 +_,7 @@
-         this.moveCloak();
-         if (this instanceof ServerPlayer serverPlayer) {
-             this.foodData.tick(serverPlayer);
-+            this.thirstData.tick(); // KioCG - player thirsty
-             this.awardStat(Stats.PLAY_TIME);
-             this.awardStat(Stats.TOTAL_WORLD_TIME);
-             if (this.isAlive()) {
 @@ -341,6 +_,17 @@
  
              if (!this.isSleeping()) {
@@ -93,22 +83,6 @@
              }
          }
  
-@@ -822,6 +_,7 @@
- 
-         this.setScore(input.getIntOr("Score", 0));
-         this.foodData.readAdditionalSaveData(input);
-+        this.thirstData.readAdditionalSaveData(input); // KioCG - player thirsty
-         input.read("abilities", Abilities.Packed.CODEC).ifPresent(this.abilities::apply);
-         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.abilities.getWalkingSpeed());
-         this.enderChestInventory.fromSlots(input.listOrEmpty("EnderItems", ItemStackWithSlot.CODEC));
-@@ -846,6 +_,7 @@
-         output.putInt("XpSeed", this.enchantmentSeed);
-         output.putInt("Score", this.getScore());
-         this.foodData.addAdditionalSaveData(output);
-+        this.thirstData.addAdditionalSaveData(output); // KioCG - player thirsty
-         output.store("abilities", Abilities.Packed.CODEC, this.abilities.pack());
-         this.enderChestInventory.storeAsSlots(output.list("EnderItems", ItemStackWithSlot.CODEC));
-         if (!this.getShoulderEntityLeft().isEmpty()) {
 @@ -1703,9 +_,13 @@
  
      public void giveExperiencePoints(int xpPoints) {
